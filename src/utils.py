@@ -5,6 +5,7 @@ import pandas as pd
 import pickle
 from src.exception import CustomException
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 def save_object(file_path, obj):
     try:
@@ -18,13 +19,19 @@ def save_object(file_path, obj):
     except Exception as e:
         raise CustomException(e, sys)
 
-def evaluate_models(X_train, y_train,X_test,y_test,models):
+def evaluate_models(X_train, y_train,X_test,y_test,models, param):
     try:
         report = {}
 
         for i in range(len(list(models))):
             model = list(models.values())[i]
             model.fit(X_train,y_train)
+            para=param[list(models.keys())[i]]
+
+            gs = GridSearchCV(model,para,cv=3)
+            gs.fit(X_train,y_train)
+            best_model = gs.best_estimator_  # Use the best estimator directly
+
 
             #model.fit(X_train, y_train)  # Train model
 
